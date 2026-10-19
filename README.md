@@ -441,28 +441,51 @@ http://<服务器IP>:8080/clash-ss.yaml   # 仅 SS（老内核）
 
 ### 客户端选择（关键）
 
+关键是**内核**，不是壳子：只有 **Mihomo / Clash.Meta 内核**才支持 Reality 和 Hysteria2。
+
 | 客户端 | 平台 | 内核 | 支持 Reality / Hysteria2 |
 |---|---|---|---|
 | **Clash Meta for Android** | 安卓 | Mihomo | ✅ |
-| **FlClash** | 安卓 / 桌面 | Mihomo | ✅ |
-| **Clash Verge Rev** | Windows / macOS / Linux | Mihomo | ✅ |
-| Clash for Android（kr328 原版） | 安卓 | Premium | ❌ 仅支持 SS/VMess/Trojan |
+| **FlClash** | 安卓 / Win / macOS / Linux | Mihomo | ✅ |
+| **Clash Verge Rev** | Win / macOS / Linux | Mihomo | ✅ |
+| **Mihomo Party** | Win / macOS / Linux | Mihomo | ✅ |
+| **ClashX Meta** | macOS | Mihomo | ✅ |
+| Clash for Windows（CFW，已停更） | Win | Premium | ❌ 仅 SS/VMess/Trojan |
+| Clash for Android（kr328 原版） | 安卓 | Premium | ❌ 仅 SS/VMess/Trojan |
 
-> 报错 `unsupport proxy type: vless` 说明内核不支持 VLESS，请换 Meta 内核客户端。
-> 确认方法：App「关于/版本」显示 `Clash.Meta` / `Mihomo` 即支持。
+> 报错 `unsupport proxy type: vless` 说明内核不支持 VLESS，请换 Mihomo/Meta 内核客户端。
+> 确认方法：App / 软件「关于 / 版本 / 内核」显示 `Clash.Meta` / `Mihomo` 即支持，
+> 显示 `Premium` 则不支持。
 
-### 软件下载（Meta / Mihomo 内核）
+### 软件下载（Mihomo / Clash.Meta 内核）
 
-- **Clash Meta for Android**（安卓，推荐）
-  下载页：<https://github.com/MetaCubeX/ClashMetaForAndroid/releases>
-  选 `arm64-v8a` 的 APK（近几年的手机基本都是 arm64）。
-- **FlClash**（安卓 / 桌面，界面现代）
-  下载页：<https://github.com/chen08209/FlClash/releases>
-- **Clash Verge Rev**（Windows / macOS / Linux，桌面推荐）
-  下载页：<https://github.com/clash-verge-rev/clash-verge-rev/releases>
+**电脑版（Windows / macOS / Linux）**
+- **Clash Verge Rev**（全平台，桌面首选）
+  <https://github.com/clash-verge-rev/clash-verge-rev/releases>
+- **Mihomo Party**（界面现代，上手简单，全平台）
+  <https://github.com/mihomo-party-org/mihomo-party/releases>
+- **Clash Nyanpasu**（老牌稳定，全平台）
+  <https://github.com/libnyanpasu/clash-nyanpasu/releases>
+- **ClashX Meta**（仅 macOS）
+  <https://github.com/MetaCubeX/ClashX.Meta/releases>
 
-> 打不开 GitHub 时，可在客户端的「镜像站」或搜索引擎找对应版本的 APK / 安装包；
-> 认准文件名里的 `arm64-v8a`（安卓）、`x64`（电脑）。
+**安卓**
+- **Clash Meta for Android**（推荐）
+  <https://github.com/MetaCubeX/ClashMetaForAndroid/releases>
+  选 `arm64-v8a` 的 APK（近几年手机基本都是 arm64）。
+- **FlClash**（安卓 / 桌面通用，界面现代）
+  <https://github.com/chen08209/FlClash/releases>
+
+> 文件名怎么选：
+> - 安卓：`arm64-v8a` 最通用
+> - Windows：`x64`（或 `amd64`）
+> - macOS：Intel 选 `x64`/`amd64`，Apple 芯片（M 系列）选 `arm64`/`aarch64`
+> - Linux：`amd64`/`x86_64` 或 AppImage
+>
+> 打不开 GitHub 时，可用客户端的「镜像站 / 加速」或搜索引擎找对应安装包。
+
+> **为什么电脑上别用 Clash for Windows**：CFW 已停更下架，内核是闭源 **Premium**，
+> 不支持 VLESS / Reality / Hysteria2，只能用 Shadowsocks。建议换上面的 Mihomo 客户端。
 
 ### 导入方式
 
@@ -560,3 +583,6 @@ MTProto 设 `ip_white_list=IPSEG`；订阅地址改随机路径或加 basic 认�
 - Clash Meta for Android：<https://github.com/MetaCubeX/ClashMetaForAndroid>
 - FlClash：<https://github.com/chen08209/FlClash>
 - Clash Verge Rev：<https://github.com/clash-verge-rev/clash-verge-rev>
+- Mihomo Party：<https://github.com/mihomo-party-org/mihomo-party>
+- Clash Nyanpasu：<https://github.com/libnyanpasu/clash-nyanpasu>
+- ClashX Meta（macOS）：<https://github.com/MetaCubeX/ClashX.Meta>
