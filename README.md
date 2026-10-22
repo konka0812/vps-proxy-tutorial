@@ -10,7 +10,7 @@
 | **Xray** | VLESS + Reality | 8443/tcp | 通用代理 | 强（真实证书伪装） |
 | **Xray** | Shadowsocks | 8388/tcp | 兼容老客户端 | 一般 |
 | **Hysteria2** | hysteria2 (QUIC/UDP) | 443/udp | 通用代理，**抗丢包** | 最强（无视丢包） |
-| **订阅服务** | nginx (http) | 8080/tcp | 一键导入 Clash | — |
+| **订阅服务** | nginx (http) | 8080/tcp | 一键导入 Clash / Shadowrocket | — |
 
 > 说明：教程中所有敏感信息（IP、密码、密钥、UUID）均用占位符 `<...>` 表示，请替换成你自己的。
 > 请妥善保管密钥，不要外泄；订阅地址也不要公开分享（否则别人能白嫖你的节点）。
@@ -348,9 +348,25 @@ sysctl net.ipv4.tcp_available_congestion_control
 
 ```bash
 mkdir -p /etc/clashsite
-# /etc/clashsite/clash.yaml  → 完整 Clash 配置（含所有节点、策略组、规则）
-# /etc/clashsite/clash-ss.yaml → 仅 Shadowsocks（老客户端用）
+# /etc/clashsite/clash.yaml    → 完整 Clash 配置（Hysteria2 + Reality + SS，Meta 内核用）
+# /etc/clashsite/clash-ss.yaml → 仅 Shadowsocks（老 Clash 内核用）
+# /etc/clashsite/hy2.yaml      → 仅 Hysteria2（Meta 内核用）
+# /etc/clashsite/sub           → base64 链接订阅（Shadowrocket / v2ray 系客户端用）
 ```
+
+> `sub` 的内容是几行分享链接的 base64，例如（明文）：
+>
+> ```text
+> hysteria2://<密码>@<服务器IP>:443/?obfs=salamander&obfs-password=<obfs密码>&sni=www.microsoft.com&insecure=1#Hysteria2
+> vless://<UUID>@<服务器IP>:8443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.microsoft.com&fp=chrome&pbk=<PublicKey>&sid=<shortId>&type=tcp&headerType=none#Reality
+> ss://<base64(method:password)>@<服务器IP>:8388#Shadowsocks
+> ```
+>
+> 生成命令（写进 `sub`）：
+>
+> ```bash
+> printf '%s\n%s\n%s\n' "$HY2" "$VLESS" "$SS" | base64 -w0 > /etc/clashsite/sub
+> ```
 
 一个可直接用的 `clash.yaml` 示例（把占位符换成你的值）：
 
@@ -427,12 +443,14 @@ docker run -d \
 
 ### 3. 访问地址
 
-```
-http://<服务器IP>:8080/clash.yaml      # 完整（Meta 内核）
-http://<服务器IP>:8080/clash-ss.yaml   # 仅 SS（老内核）
-```
+| 地址 | 给谁用 |
+|---|---|
+| `http://<服务器IP>:8080/clash.yaml` | Clash 系（Mihomo / Meta 内核）：Hysteria2 + Reality + SS |
+| `http://<服务器IP>:8080/clash-ss.yaml` | 老 Clash 内核（CFW、kr328 版）：只有 SS |
+| `http://<服务器IP>:8080/hy2.yaml` | 只要 Hysteria2 时 |
+| `http://<服务器IP>:8080/sub` | **Shadowrocket / v2ray 系**（base64 链接订阅） |
 
-> 安全提醒：该地址是公开的，知道的人都能拉到你的节点。
+> 安全提醒：这些地址是公开的，知道的人都能拉到你的节点。
 > 建议改成**随机路径**或加 **http basic 认证**。
 
 ---
@@ -450,6 +468,7 @@ http://<服务器IP>:8080/clash-ss.yaml   # 仅 SS（老内核）
 | **Clash Verge Rev** | Win / macOS / Linux | Mihomo | ✅ |
 | **Mihomo Party** | Win / macOS / Linux | Mihomo | ✅ |
 | **ClashX Meta** | macOS | Mihomo | ✅ |
+| **Shadowrocket（小火箭）** | iOS | 自带内核（非 Clash） | ✅ VLESS+Reality / Hysteria2 |
 | Clash for Windows（CFW，已停更） | Win | Premium | ❌ 仅 SS/VMess/Trojan |
 | Clash for Android（kr328 原版） | 安卓 | Premium | ❌ 仅 SS/VMess/Trojan |
 
@@ -476,6 +495,12 @@ http://<服务器IP>:8080/clash-ss.yaml   # 仅 SS（老内核）
 - **FlClash**（安卓 / 桌面通用，界面现代）
   <https://github.com/chen08209/FlClash/releases>
 
+**iOS（苹果手机）**
+- **Shadowrocket（小火箭）**：App Store 需外区 Apple ID（付费）。
+  支持 VLESS+Reality、Hysteria2、Shadowsocks 等，用 `/sub` 订阅导入。
+- **Stash**：App Store，Mihomo 系内核，也可用 Clash 订阅 `clash.yaml`。
+- **sing-box**：App Store，免费，支持 Reality / Hysteria2。
+
 > 文件名怎么选：
 > - 安卓：`arm64-v8a` 最通用
 > - Windows：`x64`（或 `amd64`）
@@ -489,10 +514,19 @@ http://<服务器IP>:8080/clash-ss.yaml   # 仅 SS（老内核）
 
 ### 导入方式
 
-1. **订阅导入**（推荐）：新建配置 → 从 URL 导入 → 粘贴 `http://<服务器IP>:8080/clash.yaml`
-2. **手动添加**：按上面的 `proxies` 字段逐个填
+**Clash 系（Mihomo / Meta 内核）**
+1. 订阅导入（推荐）：新建配置 → 从 URL 导入 → 粘贴 `http://<服务器IP>:8080/clash.yaml`
+2. 手动添加：按上面的 `proxies` 字段逐个填
+3. 选策略组 `PROXY` → 优先选 **Hysteria2**
 
-选策略组 `PROXY` → 优先选 **Hysteria2**。
+**Shadowrocket（小火箭）**
+1. 右上角 `+` → 类型选 **Subscribe / 订阅**
+2. URL 填 `http://<服务器IP>:8080/sub`（base64 链接订阅）
+3. 保存后进入更新，会拉到 Hysteria2 / Reality / Shadowsocks 三个节点
+4. 也可直接点开 `vless://` / `hysteria2://` 链接手动导入
+
+> 注意：小火箭用 **`/sub`**；Clash 系用 **`clash.yaml`**，两者别混用。
+> 老 Clash 内核用 `clash-ss.yaml`。
 
 ### Telegram 怎么走
 
